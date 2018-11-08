@@ -14,7 +14,8 @@
             @blur="$v.title.$touch()"
             :rules="[v => !!v]"
           ></v-text-field>
-          <v-textarea
+          <v-text-field
+              multi-line
               name="description"
               label="Description"
               type="text"
@@ -23,7 +24,7 @@
               @input="$v.description.$touch()"
               @blur="$v.description.$touch()"
               :rules="[v => !!v]"
-            ></v-textarea>
+            ></v-text-field>
         </v-form>
         <v-layout row>
           <v-flex xs12>
@@ -88,8 +89,9 @@
           ad.title = this.title
           ad.description = this.description
           ad.promo = this.promo
+          ad.imageSrc = 'https://indifound.com/wp-content/uploads/2016/09/kartinki-uspokaivayushchie-nervy.jpg'
         }
-        console.log(ad)
+        this.$store.dispatch('createAd', ad)
       }
     },
     computed: {

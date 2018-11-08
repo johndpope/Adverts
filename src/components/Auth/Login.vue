@@ -39,7 +39,8 @@
             <v-btn
               color="primary"
               @click="onSubmit"
-              :disabled="!valid"
+              :loading="loading"
+              :disabled="!valid || loading"
             >Submit</v-btn>
           </v-card-actions>
         </v-card>
@@ -50,7 +51,6 @@
 
 <script>
   import { required, minLength, maxLength, email } from 'vuelidate/lib/validators'
-
   export default {
     validations: {
       password: {required, minLength: minLength(6), maxLength: maxLength(16)},
@@ -61,16 +61,6 @@
         email: '',
         password: '',
         valid: false
-      }
-    },
-    methods: {
-      onSubmit () {
-        const user = {}
-        if (this.$refs.form.validate()) {
-          user.email = this.email
-          user.password = this.password
-        }
-        console.log(user)
       }
     },
     computed: {
@@ -88,6 +78,30 @@
         !this.$v.password.maxLength && errors.push('Name must be less then 16 characters long')
         !this.$v.password.required && errors.push('Name is required.')
         return errors
+      },
+      loading () {
+        return this.$store.getters.loading
+      },
+      error () {
+        return this.$store.getters.error
+      }
+    },
+    methods: {
+      onSubmit () {
+        const user = {}
+        if (this.$refs.form.validate()) {
+          user.email = this.email
+          user.password = this.password
+        }
+        this.$store.dispatch('loginUser', user)
+          .then(() => {
+            this.$router.push('/')
+          }).catch(() => {})
+      }
+    },
+    created () {
+      if (this.$route.query['loginError']) {
+        this.$store.dispatch('setError', 'Please Log In to show this page')
       }
     }
   }

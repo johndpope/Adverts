@@ -47,7 +47,8 @@
             <v-btn
               color="primary"
               @click="onSubmit"
-              :disabled="!valid"
+              :loading="loading"
+              :disabled="!valid || loading"
             >Create Account</v-btn>
           </v-card-actions>
         </v-card>
@@ -76,16 +77,6 @@
         ]
       }
     },
-    methods: {
-      onSubmit () {
-        const user = {}
-        if (this.$refs.form.validate()) {
-          user.email = this.email
-          user.password = this.password
-        }
-        console.log(user)
-      }
-    },
     computed: {
       emailErrors () {
         const errors = []
@@ -101,6 +92,26 @@
         !this.$v.password.maxLength && errors.push('Name must be less then 16 characters long')
         !this.$v.password.required && errors.push('Name is required.')
         return errors
+      },
+      loading () {
+        return this.$store.getters.loading
+      },
+      error () {
+        return this.$store.getters.error
+      }
+    },
+    methods: {
+      onSubmit () {
+        const user = {}
+        if (this.$refs.form.validate()) {
+          user.email = this.email
+          user.password = this.password
+        }
+        this.$store.dispatch('registerUser', user)
+          .then(() => {
+            this.$router.push('/')
+          })
+          .catch(() => {})
       }
     }
   }
